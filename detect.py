@@ -25,9 +25,8 @@ def detect_anomalies(model, X_train, X_test, window_end_indices, train_mask, df,
     anomaly_mask = mse_test > threshold
     anomaly_indices = test_window_end_indices[anomaly_mask]
 
-    # ----------------------------
-    # 📊 Plot reconstruction error distribution
-    # ----------------------------
+
+    #  Plot reconstruction error distribution
     plt.figure(figsize=(8,5))
     plt.hist(mse_test, bins=50, alpha=0.7, label="Test Errors", color="blue")
     plt.axvline(threshold, color="red", linestyle="--", label=f"Threshold ({k}%)")
@@ -39,14 +38,13 @@ def detect_anomalies(model, X_train, X_test, window_end_indices, train_mask, df,
         error_path = save_path.replace(".png", "_errors.png")
         plt.savefig(error_path)
         plt.close("all")
-        print(f"📊 Saved error distribution to {error_path}")
+        print(f" Saved error distribution to {error_path}")
     else:
         plt.show()
         plt.close("all")
 
-    # ----------------------------
+
     # If anomaly labels exist in df
-    # ----------------------------
     precision = recall = f1 = None
     if "Anomaly" in df.columns:
         y_true = df["Anomaly"].iloc[test_window_end_indices].values
