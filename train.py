@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
-
 def train_model(model, X_train, X_val,
                 epochs=100, batch_size=64, lr=1e-3,
                 device="cuda", patience=10, weight_decay=1e-3,
@@ -18,9 +17,9 @@ def train_model(model, X_train, X_val,
     - Input noise injection
     """
 
-    # ✅ Choose loss function
+  
     if use_huber:
-        criterion = nn.HuberLoss(delta=1.0)   # smoother than MSE
+        criterion = nn.HuberLoss(delta=1.0)  
     else:
         criterion = nn.MSELoss()
 
@@ -32,9 +31,6 @@ def train_model(model, X_train, X_val,
     best_weights = None
 
     for epoch in range(epochs):
-        # -------------------
-        # Training
-        # -------------------
         model.train()
         perm = torch.randperm(X_train.size(0))
         epoch_loss = 0.0
@@ -43,7 +39,6 @@ def train_model(model, X_train, X_val,
             idx = perm[i:i + batch_size]
             batch = X_train[idx].to(device)
 
-            # 🔹 Add Gaussian noise for regularization
             if noise_std > 0:
                 batch = batch + noise_std * torch.randn_like(batch)
 
@@ -52,7 +47,6 @@ def train_model(model, X_train, X_val,
             loss = criterion(output, batch)
             loss.backward()
 
-            # 🔹 Clip gradients to prevent exploding updates
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 
             optimizer.step()
@@ -60,9 +54,7 @@ def train_model(model, X_train, X_val,
 
         train_losses.append(epoch_loss / len(X_train))
 
-        # -------------------
         # Validation
-        # -------------------
         model.eval()
         with torch.no_grad():
             val_out = model(X_val.to(device))
@@ -73,9 +65,7 @@ def train_model(model, X_train, X_val,
               f"Train Loss={train_losses[-1]:.6f} | "
               f"Val Loss={val_loss:.6f}")
 
-        # -------------------
         # Early Stopping
-        # -------------------
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             best_weights = model.state_dict()
@@ -83,16 +73,14 @@ def train_model(model, X_train, X_val,
         else:
             patience_counter += 1
             if patience_counter >= patience:
-                print(f"⏹ Early stopping at epoch {epoch + 1}")
+                print(f"Early stopping at epoch {epoch + 1}")
                 break
 
     # Restore best model
     if best_weights is not None:
         model.load_state_dict(best_weights)
-
-    # -------------------
+      
     # Plot training curve
-    # -------------------
     if save_path:
         plt.figure(figsize=(8, 4))
         plt.plot(train_losses, label="Train Loss")
