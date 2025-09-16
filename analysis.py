@@ -3,18 +3,13 @@ import seaborn as sns
 import numpy as np
 import pandas as pd
 
-# =======================
-# Helper: ensure 'return' exists
-# =======================
 def ensure_return(df):
     """Compute daily returns if not already present."""
     if "return" not in df.columns:
         df["return"] = (df["Close"] - df["Close"].shift(1)) / df["Close"].shift(1)
     return df
 
-# =======================
 # 1. Volume over time
-# =======================
 def plot_volume(dataframes):
     plt.figure(figsize=(12, 6))
     for name, df in dataframes.items():
@@ -27,9 +22,7 @@ def plot_volume(dataframes):
     plt.legend()
     plt.show()
 
-# =======================
 # 2. Returns over time
-# =======================
 def plot_returns(dataframes):
     plt.figure(figsize=(12, 6))
     for name, df in dataframes.items():
@@ -41,9 +34,7 @@ def plot_returns(dataframes):
     plt.legend()
     plt.show()
 
-# =======================
 # 3. Cumulative Returns
-# =======================
 def plot_cumulative_returns(dataframes):
     plt.figure(figsize=(12, 6))
     for name, df in dataframes.items():
@@ -56,9 +47,7 @@ def plot_cumulative_returns(dataframes):
     plt.legend()
     plt.show()
 
-# =======================
 # 4. Drawdown for one coin
-# =======================
 def compute_drawdown(df):
     df = ensure_return(df)
     wealth_index = 1000 * (1 + df["return"]).cumprod()
@@ -78,9 +67,7 @@ def plot_drawdown(df, coin):
     plt.show()
     print(f"Max drawdown for {coin}: {dd['Drawdown'].min():.2%} at {dd['Drawdown'].idxmin()}")
 
-# =======================
 # 5. Return correlation heatmap
-# =======================
 def plot_return_correlation(dataframes):
     returns_dict = {}
     for name, df in dataframes.items():
@@ -92,9 +79,7 @@ def plot_return_correlation(dataframes):
     plt.title("Return Correlation Heatmap")
     plt.show()
 
-# =======================
 # 6. Volume correlation heatmap
-# =======================
 def plot_volume_correlation(dataframes):
     vols_dict = {}
     for name, df in dataframes.items():
@@ -107,9 +92,7 @@ def plot_volume_correlation(dataframes):
         plt.title("Volume Correlation Heatmap")
         plt.show()
 
-# =======================
 # 7. Volatility & Sharpe Ratio
-# =======================
 def compute_risk_metrics(dataframes):
     rows = []
     for name, df in dataframes.items():
