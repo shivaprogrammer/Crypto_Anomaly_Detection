@@ -26,7 +26,7 @@ cryptocurrency/
 
 ## 📊 Dataset
 
-- **Source**: Custom multi-coin **cryptocurrency dataset** (23 coins)
+- **Source**: [Cryptocurrency Price History Dataset](https://www.kaggle.com/datasets/sudalairajkumar/cryptocurrencypricehistory/data) (23 coins)
 - **Format**: CSV files with OHLCV data (`Open`, `High`, `Low`, `Close`, `Volume`)
 - **Features engineered**:
   - Daily returns
@@ -164,6 +164,7 @@ pip install torch pandas numpy matplotlib seaborn scikit-learn optuna
 - Add **ground-truth anomaly labels** for quantitative evaluation (Precision/Recall/F1)
 - Extend to **multi-asset correlation-based anomalies**
 - Deploy as a **real-time monitoring dashboard**
+
 
 
 ## 🤝 Contributing
