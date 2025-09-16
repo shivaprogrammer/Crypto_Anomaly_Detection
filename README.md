@@ -16,23 +16,21 @@ The pipeline covers:
 
 ## 📂 Project Structure
 
+```bash
 cyptocurrency/
-│── data_preprocessing.py # Preprocess raw crypto CSVs (scaling, returns, train/test split)
-│── analysis.py # Exploratory data analysis (EDA) plots
-│── train.py # Model training with early stopping, Huber loss, dropout, noise
-│── detect.py # Anomaly detection logic (reconstruction error thresholding)
-│── tune.py # Hyperparameter tuning with Optuna
+│── data_preprocessing.py   # Preprocess raw crypto CSVs (scaling, returns, train/test split)
+│── analysis.py             # Exploratory data analysis (EDA) plots
+│── train.py                # Model training with early stopping, Huber loss, dropout, noise
+│── detect.py               # Anomaly detection logic (reconstruction error thresholding)
+│── tune.py                 # Hyperparameter tuning with Optuna
 │── models/
-│ ├── lstm_autoencoder.py
-│ ├── transformer_anomaly.py
-│── utils.py # Helper functions (sliding windows, plotting, device)
-│── main.py # Main pipeline (EDA → training → anomaly detection → results)
-│── results/ # Saved plots and summary CSV
-│── summary.csv # Final results table
+│    ├── lstm_autoencoder.py
+│    ├── transformer_anomaly.py
+│── utils.py                # Helper functions (sliding windows, plotting, device)
+│── main.py                 # Main pipeline (EDA → training → anomaly detection → results)
+│── results/                # Saved plots and summary CSV
+│── summary.csv             # Final results table
 
-
-
----
 
 ## 📊 Dataset
 
