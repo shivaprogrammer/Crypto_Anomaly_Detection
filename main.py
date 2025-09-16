@@ -14,10 +14,7 @@ from models.lstm_autoencoder import LSTMAutoencoder
 from models.transformer_anomaly import TransformerAnomalyDetector
 from tune import run_hyperparameter_search
 
-
-# ========================
 # CONFIG
-# ========================
 DATA_PATH = "/data/datasets/data/crypto/all_data"
 RESULTS_PATH = "/data/m24csa029/MTP/cyptocurrency/results"
 TEST_SIZE = 0.2
@@ -30,16 +27,13 @@ os.makedirs(RESULTS_PATH, exist_ok=True)
 device = "cuda:1" if torch.cuda.is_available() else "cpu"
 print("Using device:", device)
 
-# ========================
 # LOAD DATA
-# ========================
-print("\n📂 Loading all coins...")
+print("\n Loading all coins...")
 dataframes = load_all_coins(DATA_PATH)
-print(f"✅ Loaded {len(dataframes)} coins")
+print(f" Loaded {len(dataframes)} coins")
 
-# ========================
+
 # RUN ANALYSIS
-# ========================
 plot_volume(dataframes)
 plot_returns(dataframes)
 plot_cumulative_returns(dataframes)
@@ -52,9 +46,7 @@ plot_volatility_and_sharpe(metrics)
 if "coin_Bitcoin" in dataframes:
     plot_drawdown(dataframes["coin_Bitcoin"], "Bitcoin")
 
-# ========================
-# TRAIN + ANOMALY DETECTION
-# ========================
+# TRAIN and ANOMALY DETECTION
 summary = []
 
 for coin, raw_df in dataframes.items():
@@ -67,26 +59,24 @@ for coin, raw_df in dataframes.items():
     n_train = int((1 - TEST_SIZE) * n_total)
 
     if COMPARE_MODE:
-        # 🔎 Hyperparameter search
-        print(f"\n🔎 Running hyperparameter search for LSTM_AE on {coin}...")
+        #  Hyperparameter search
+        print(f"\n Running hyperparameter search for LSTM_AE on {coin}...")
         lstm_study = run_hyperparameter_search(features, raw_df, device,
                                                model_type="LSTM_AE", n_trials=10)
 
-        print(f"\n🔎 Running hyperparameter search for Transformer on {coin}...")
+        print(f"\n Running hyperparameter search for Transformer on {coin}...")
         trans_study = run_hyperparameter_search(features, raw_df, device,
                                                 model_type="Transformer", n_trials=10)
 
         best_lstm_params = lstm_study.best_params
         best_trans_params = trans_study.best_params
 
-        print(f"✅ Best LSTM params: {best_lstm_params}")
-        print(f"✅ Best Transformer params: {best_trans_params}")
+        print(f" Best LSTM params: {best_lstm_params}")
+        print(f" Best Transformer params: {best_trans_params}")
 
         models = {}
 
-        # ------------------------
-        # 🔹 Build LSTM AE with its best window size
-        # ------------------------
+        #  Build LSTM AE with its best window size
         lstm_window = best_lstm_params["window_size"]
         X_windows = create_sliding_windows(features, window_size=lstm_window)
         X_train, X_test, window_end_indices, train_mask = split_train_test(X_windows, lstm_window, n_train)
@@ -99,9 +89,8 @@ for coin, raw_df in dataframes.items():
             dropout=best_lstm_params["dropout"]
         ).to(device)
 
-        # ------------------------
-        # 🔹 Build Transformer with its best window size
-        # ------------------------
+        #  Build Transformer with its best window size
+
         trans_window = best_trans_params["window_size"]
         X_windows_trans = create_sliding_windows(features, window_size=trans_window)
         X_train_trans, X_test_trans, window_end_indices_trans, train_mask_trans = split_train_test(
@@ -132,19 +121,13 @@ for coin, raw_df in dataframes.items():
         X_test = torch.tensor(X_test, dtype=torch.float32).to(device)
         model_datasets = {"LSTM_AE": (X_train, X_test, window_end_indices, train_mask)}
 
-    # ========================
+
     # Train & Detect
-    # ========================
     for model_name, model in models.items():
         print(f"\n>>> Training {model_name} for {coin}...")
-
-        # dataset for this model
         X_train, X_test, window_end_indices, train_mask = model_datasets[model_name]
-
-        # Save curve path
         save_curve = os.path.join(RESULTS_PATH, f"{coin}_{model_name}_training_curve.png")
 
-        # Train
         model, best_val_loss, train_losses, val_losses = train_model(
             model, X_train, X_test,
             epochs=EPOCHS, batch_size=BATCH_SIZE, lr=LR, device=device,
@@ -171,10 +154,9 @@ for coin, raw_df in dataframes.items():
             "F1": f1
         })
 
-# ========================
+
 # SAVE SUMMARY CSV
-# ========================
 summary_df = pd.DataFrame(summary)
 summary_csv = os.path.join(RESULTS_PATH, "summary.csv")
 summary_df.to_csv(summary_csv, index=False)
-print(f"\n✅ Summary saved to {summary_csv}")
+print(f"\n Summary saved to {summary_csv}")
