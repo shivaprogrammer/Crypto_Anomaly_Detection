@@ -2,9 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 
-# ================================
 # 1. Sliding Window Creation
-# ================================
 def create_sliding_windows(values, window_size=60, step=1):
     """
     Convert time series into overlapping windows.
@@ -17,9 +15,7 @@ def create_sliding_windows(values, window_size=60, step=1):
         windows.append(values[start:start + window_size])
     return np.stack(windows)
 
-# ================================
 # 2. Train/Test Split
-# ================================
 def split_train_test(X_windows, window_size, n_train):
     """
     Split windows into train and test sets based on window end index.
@@ -30,16 +26,14 @@ def split_train_test(X_windows, window_size, n_train):
     X_test = X_windows[~train_mask]
     return X_train, X_test, window_end_indices, train_mask
 
-# ================================
+
 # 3. Device Selection
-# ================================
 def get_device():
     """Return cuda if available, else cpu"""
     return "cuda" if torch.cuda.is_available() else "cpu"
 
-# ================================
+
 # 4. Plot Anomalies on Price
-# ================================
 def plot_anomalies(df, anomaly_indices, coin, save_path=None):
     """
     Plot anomalies on the Close price series.
@@ -61,9 +55,7 @@ def plot_anomalies(df, anomaly_indices, coin, save_path=None):
     else:
         plt.show()
 
-# ================================
 # 5. Plot Reconstruction vs Actual
-# ================================
 def plot_reconstruction(original_window, reconstructed_window, feature_idx=3, feature_name="Close"):
     """
     Plot original vs reconstructed window for debugging anomalies.
